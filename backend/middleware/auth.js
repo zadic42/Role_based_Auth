@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/User');
+const { Trainer } = require('../models/Trainer');
 const { logger } = require('../utils/logger');
 
 
@@ -20,8 +21,13 @@ const authenticateToken = async (req, res, next) => {
             return next();
         }
 
-        // For regular users, verify against database
-        const user = await User.findById(decoded.userId);
+        // For regular users and trainers, verify against appropriate database
+        let user;
+        if (decoded.role === 'trainer') {
+            user = await Trainer.findById(decoded.userId);
+        } else {
+            user = await User.findById(decoded.userId);
+        }
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

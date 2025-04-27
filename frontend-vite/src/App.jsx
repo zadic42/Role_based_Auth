@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar'
 import AdminNavbar from './components/AdminNavbar'
+import TrainerNavbar from './components/TrainerNavbar'
 import Sidebar from './components/Sidebar'
 import UserLogin from './pages/UserLogin'
 import UserSignup from './pages/UserSignup'
@@ -16,6 +17,7 @@ import AuthCallback from './pages/AuthCallback'
 import TrainerLogin from './pages/TrainerLogin'
 import AddTrainer from './pages/AddTrainer'
 import AdminTrainers from './pages/AdminTrainers'
+import TrainerDashboard from './pages/TrainerDashboard'
 
 // Protected Route wrapper for user routes
 const ProtectedUserRoute = ({ children }) => {
@@ -41,6 +43,18 @@ const ProtectedAdminRoute = ({ children }) => {
   return children
 }
 
+// Protected Route wrapper for trainer routes
+const ProtectedTrainerRoute = ({ children }) => {
+  const token = localStorage.getItem('token')
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  
+  if (!token || user.role !== 'trainer') {
+    return <Navigate to="/trainers/login" replace />
+  }
+  
+  return children
+}
+
 // Layout wrapper for authenticated pages
 const AuthenticatedLayout = ({ children, isAdmin = false }) => {
   return (
@@ -48,6 +62,21 @@ const AuthenticatedLayout = ({ children, isAdmin = false }) => {
       <Sidebar />
       <div className="flex-1 pt-16 pl-64">
         {isAdmin ? <AdminNavbar /> : <Navbar />}
+        <main className="p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
+
+// Layout wrapper for trainer pages
+const TrainerLayout = ({ children }) => {
+  return (
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 pt-16 pl-64">
+        <TrainerNavbar />
         <main className="p-6">
           {children}
         </main>
@@ -91,6 +120,28 @@ function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/verify-mfa" element={<VerifyMFA />} />
           <Route path="/auth-success" element={<AuthCallback />} />
+
+          {/* Trainer routes */}
+          <Route
+            path="/trainers/dashboard"
+            element={
+              <ProtectedTrainerRoute>
+                <TrainerLayout>
+                  <TrainerDashboard />
+                </TrainerLayout>
+              </ProtectedTrainerRoute>
+            }
+          />
+          <Route
+            path="/trainers/profile"
+            element={
+              <ProtectedTrainerRoute>
+                <TrainerLayout>
+                  <div>Trainer Profile Page</div>
+                </TrainerLayout>
+              </ProtectedTrainerRoute>
+            }
+          />
 
           {/* Protected routes with authenticated layout */}
           <Route

@@ -6,9 +6,9 @@ const { promisify } = require('util');
 const execAsync = promisify(exec);
 
 // Configuration
-const BACKUP_DIR = path.join(__dirname, '../../backups');
-const MAX_BACKUPS = 10; // Keep the last 10 backups
-const BACKUP_RETENTION_DAYS = 30; // Keep backups for 30 days
+const BACKUP_DIR = path.join(__dirname, '../backups');
+const MAX_BACKUPS = 10;
+const BACKUP_RETENTION_DAYS = 30;
 const MONGODUMP_PATH = 'C:\\Program Files\\MongoDB\\Tools\\100\\bin\\mongodump.exe';
 const MONGORESTORE_PATH = 'C:\\Program Files\\MongoDB\\Tools\\100\\bin\\mongorestore.exe';
 
@@ -23,8 +23,8 @@ if (!fs.existsSync(BACKUP_DIR)) {
  */
 const createBackup = async () => {
   try {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFileName = `backup-${timestamp}.gz`;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 10);
+    const backupFileName = `${timestamp}.gz`;
     const backupPath = path.join(BACKUP_DIR, backupFileName);
     
     // Get MongoDB connection details from environment variables

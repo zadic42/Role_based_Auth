@@ -7,14 +7,15 @@ const {
   getTrainerById,
   updateTrainer,
   deleteTrainer,
-  loginTrainer
+  loginTrainer,
+  getTrainerProfile
 } = require('../controllers/trainerController');
 
 // Public routes
 router.post('/login', loginTrainer);
 
 // Protected routes (require authentication)
-router.get('/profile', authenticateToken, getTrainerById);
+router.get('/profile', authenticateToken, getTrainerProfile);
 
 // Admin routes (require admin authentication)
 router.post('/', authenticateToken, isAdmin, createTrainer);

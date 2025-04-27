@@ -27,7 +27,7 @@ const TrainerLogin = () => {
     try {
       const response = await loginTrainer(formData)
       toast.success('Login successful!')
-      navigate('/trainer/dashboard')
+      navigate('/trainers/dashboard')
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.')
       toast.error(err.message || 'Login failed. Please try again.')

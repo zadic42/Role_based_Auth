@@ -80,7 +80,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/audit-logs', require('./routes/auditLogs'));
 app.use('/api/error-logs', require('./routes/errorLogs'));
 app.use('/api/backups', require('./routes/backups'));
-app.use('/api/trainer', require('./routes/trainers'));
+app.use('/api/trainers', require('./routes/trainers'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

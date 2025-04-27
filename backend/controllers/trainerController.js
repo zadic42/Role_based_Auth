@@ -1,4 +1,4 @@
-const Trainer = require('../models/Trainer');
+const { Trainer } = require('../models/Trainer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config');
@@ -131,7 +131,7 @@ exports.loginTrainer = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { 
-        id: trainer._id,
+        userId: trainer._id,
         role: trainer.role
       },
       JWT_SECRET,
@@ -156,11 +156,20 @@ exports.loginTrainer = async (req, res) => {
 // Get trainer profile
 exports.getTrainerProfile = async (req, res) => {
   try {
-    const trainer = await Trainer.findById(req.user.id).select('-password');
+    const trainer = await Trainer.findById(req.user.userId).select('-password');
     if (!trainer) {
       return res.status(404).json({ message: 'Trainer not found' });
     }
-    res.json(trainer);
+    
+    // Add stats to the response
+    const stats = {
+      totalSessions: trainer.totalSessions || 0,
+      upcomingSessions: trainer.upcomingSessions || 0,
+      completedSessions: trainer.completedSessions || 0,
+      averageRating: trainer.averageRating || 0
+    };
+    
+    res.json({ ...trainer.toObject(), ...stats });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching profile', error: error.message });
   }
@@ -170,7 +179,7 @@ exports.getTrainerProfile = async (req, res) => {
 exports.updateTrainerPassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const trainer = await Trainer.findById(req.user.id);
+    const trainer = await Trainer.findById(req.user.userId);
 
     if (!trainer) {
       return res.status(404).json({ message: 'Trainer not found' });

@@ -54,11 +54,7 @@ trainerSchema.pre('save', async function(next) {
 
 // Compare password method
 trainerSchema.methods.comparePassword = async function(candidatePassword) {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
-    throw error;
-  }
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Update timestamp on save
@@ -69,4 +65,4 @@ trainerSchema.pre('save', function(next) {
 
 const Trainer = mongoose.model('Trainer', trainerSchema);
 
-module.exports = Trainer; 
+module.exports = { Trainer }; 
